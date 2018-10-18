@@ -99,3 +99,54 @@ for elemento in train.geoNetwork:
 var_geoNetwork.to_csv('data/info_geoNetwork.csv',sep=';')
 info_geoNetwork = pd.read_csv('data/info_geoNetwork.csv',sep=';',index_col=0)
 
+print('sessionId')
+print(train.sessionId.iloc[0])
+#Es un id total
+
+print('socialEngagementType')
+print(train.socialEngagementType.iloc[0])
+print(train.socialEngagementType.value_counts())
+#Todos tienen el mismo valor: Not Socially Engaged, esta variable no nos da información para el entrenamiento.
+
+print('totals')
+print(train.totals.iloc[0])
+print(train.totals.iloc[1])
+#Tenemos el diccionario, aplicamos la misma metodología que en los cass anteriores.
+
+patron_totals = eval(train.totals.loc[0].replace('false','"false"'))
+#Vamos a crearnos un dataframe a partir de cada uno de los valores de device. De índice vamos a utilizar el índice
+#del problema. Así podremos sacar variables para cada registro real del problema final.
+var_totals = pd.DataFrame()
+#Mapeamos la variable dentro del dataframe (versión bucle)
+i=0
+for elemento in train.totals:
+    tmp = eval(elemento)
+    tmp_ser = pd.DataFrame(data=tmp, index=[train.fullVisitorId.iloc[i]], columns=patron_totals.keys())
+    var_totals= pd.concat([var_totals,tmp_ser],axis=0)
+    if i % 1000 == 0:
+        print('completado:' + str(i) + '/' + str(len(train)))
+    i+=1
+var_totals.to_csv('data/info_totals.csv',sep=';')
+info_totals = pd.read_csv('data/info_totals.csv',sep=';',index_col=0)
+
+print('trafficSource')
+print(train.trafficSource.iloc[0])
+print(train.trafficSource.iloc[1])
+#Tenemos un diccionario, hacemos como en los casos anteriores.
+
+patron_trafficSource = eval(train.trafficSource.loc[0].replace('false','"false"').replace('true','"true"'))
+#Vamos a crearnos un dataframe a partir de cada uno de los valores de device. De índice vamos a utilizar el índice
+#del problema. Así podremos sacar variables para cada registro real del problema final.
+var_trafficSource = pd.DataFrame()
+#Mapeamos la variable dentro del dataframe (versión bucle)
+i=0
+for elemento in train.trafficSource:
+    tmp = eval(elemento.replace('false','"false"').replace('true','"true"'))
+    tmp_ser = pd.DataFrame(data=tmp, index=[train.fullVisitorId.iloc[i]], columns=patron_trafficSource.keys())
+    var_trafficSource= pd.concat([var_trafficSource,tmp_ser],axis=0)
+    if i % 1000 == 0:
+        print('completado:' + str(i) + '/' + str(len(train)))
+    i+=1
+var_trafficSource.to_csv('data/info_trafficSource.csv',sep=';')
+info_trafficSource = pd.read_csv('data/info_trafficSource.csv',sep=';',index_col=0)
+
